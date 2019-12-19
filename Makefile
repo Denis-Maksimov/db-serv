@@ -12,21 +12,21 @@ CFLAGS+= -I./src `pkg-config --cflags --libs gtk+-3.0`
 CFLAGS+= -I./src/Serv
 CFLAGS+= -I./src/GUI
 CFLAGS+= -I./lib/sqlite-amalgamation-3071300
-
+CFLAGS+= -I/lib/x86_64-linux-gnu/glib-2.0/include
 
 #----------------------------------
 
 SRC:= ./src/main.cpp
 OBJ:= ./main.o
 #--GUI
-SRC+= ./src/GUI/main_gui.cpp
-OBJ+= ./main_gui.o
+SRC+= ./src/main_GUI.cpp
+OBJ+= ./main_GUI.o
 #--Server
 SRC+= ./src/Serv/main_server.cpp
 OBJ+= ./main_server.o
 
-SRC+= ./src/Serv/Connection.cpp
-OBJ+= ./Connection.o
+SRC+= ./src/Serv/Network.cpp
+OBJ+= ./Network.o
 #--Базы данных
 SRC+= ./src/file1.cpp
 OBJ+= ./file1.o
@@ -67,10 +67,10 @@ sqlite3.o: ./lib/sqlite-amalgamation-3071300/sqlite3.c
 
 #----------------------------------
 
-main_gui.o: ./src/GUI/main_gui.cpp
+main_GUI.o: ./src/GUI/main_GUI.cpp
 		#
 		#compilling main.cpp
-		g++  ./src/GUI/main_gui.cpp $(CFLAGS)
+		g++  ./src/GUI/main_GUI.cpp $(CFLAGS)
 
 #----------------------------------
 
@@ -81,10 +81,10 @@ main_server.o: ./src/Serv/main_server.cpp
 
 #----------------------------------
 
-Connection.o: ./src/Serv/Connection.cpp
+Network.o: ./src/Serv/Network.cpp
 		#
 		#compilling main.cpp
-		g++  ./src/Serv/Connection.cpp $(CFLAGS)
+		g++  ./src/Serv/Network.cpp $(CFLAGS)
 
 #----------------------------------
 

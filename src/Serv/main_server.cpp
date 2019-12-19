@@ -1,7 +1,10 @@
-#include "main_SERVER.hpp"
+#include "main_server.hpp"
 
 
-int main(int argc, char *argv[]) {
+
+    int main_Server(int argc, char **argv)
+
+{
     Network servr(1024);
 
     servr.init(8080);

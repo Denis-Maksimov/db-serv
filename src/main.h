@@ -9,8 +9,8 @@
 
 #include "file1.hpp"
 #include "querys.hpp"
-#include "main_GUI.hpp"
-#include "main_SERVER.hpp"
+#include "./GUI/main_GUI.hpp"
+#include "./Serv/main_server.hpp"
 const char* LZ25=\
 "\
 #####################################################################\n\
@@ -28,3 +28,4 @@ void _system_Server(std::mutex &mtx, int& terminate_flag); //Оболочка
 
 //int main_Server(int argc, char **argv);
 
+void _Server_term(std::mutex &mtx, int& terminate_flag);
