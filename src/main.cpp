@@ -26,9 +26,16 @@ int main(int argc, char **argv){
     std::mutex mtx;
 
     std::thread thread_GUI(_system_GUI,std::ref(mtx),std::ref(terminate));
+    std::this_thread::yield();
+
     std::thread thread_SERVER(_system_Server,std::ref(mtx),std::ref(terminate));
+    std::this_thread::yield();
     thread_GUI.join();
+    mtx.lock();
     terminate=true;
+    mtx.unlock();
+    std::this_thread::yield();
+  //  thread_SERVER.join();
     thread_SERVER.join();
     puts("terminated!");
    ////----этот-блок-работает-только-на-linux-вместо-потоков-тут-процессы---
@@ -130,7 +137,9 @@ int main(int argc, char **argv){
 
 //подпрограмма графической оболочки
 void _system_GUI(std::mutex &mtx, int& terminate_flag){
-
+    puts("gui!");
+    std::this_thread::yield();
+    
     //int main_GUI(int argc, char **argv);
 
 }
@@ -148,6 +157,18 @@ void _system_Server(std::mutex &mtx, int& terminate_flag){
 
     int return_code=0;
     std::thread thread_SERVER_term(_Server_term,std::ref(mtx),std::ref(terminate_flag));
+    int _term=0;
+    while (true)
+    {
+        mtx.lock();
+        _term=terminate_flag;
+        mtx.unlock();
+        if(_term) break;
+        std::this_thread::yield();
+    }/* condition */
+    puts("terminated serv");
+    std::this_thread::yield();
+    thread_SERVER_term.join();
     //int main_Server(int argc, char **argv);
 }
 
@@ -163,9 +184,10 @@ void _Server_term(std::mutex &mtx, int& terminate_flag){
         if(_term) break;
         std::this_thread::yield();
     }
+    std::this_thread::yield();
     //terminate
-    Network client(100);
-    client.send_(PORT,"127.0.0.1");
+   // Network client(100);
+   // client.send_(PORT,"127.0.0.1");
 
 
 

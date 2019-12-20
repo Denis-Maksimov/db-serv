@@ -26,7 +26,7 @@ long int* f1::pos_lines_in_file(FILE* stream){
      * Переменная для элемента возвращаемого
      * массива
      * *******************************************/
-    size_t iterator=0;
+    std::size_t iterator=0;
 
     /*********************************************
      * Запоминаем текущую позицию, чтоб не поломать
@@ -127,7 +127,7 @@ long* f1::parse_file_to_querrys(FILE* stream,int* argc){
      * Переменная для элемента возвращаемого
      * массива
      * *******************************************/
-    size_t iterator=0;
+    std::size_t iterator=0;
 
     /*********************************************
      * Запоминаем текущую позицию, чтоб не поломать
@@ -272,7 +272,7 @@ setup_from_files::~setup_from_files(){
  * 
  * 
  * ***********************************************/
-char* SQLquery::get_line(int line_number,char* buffer,size_t size_of_bufer){
+char* SQLquery::get_line(int line_number,char* buffer,std::size_t size_of_bufer){
 
         FILE* stream=fopen(querys_ini,"r");
 

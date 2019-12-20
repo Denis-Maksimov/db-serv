@@ -70,7 +70,7 @@ class setup_from_files{
     public:
         SQLquery(const char* file_ini);
         ~SQLquery();
-        char* get_line(int line_number,char* buffer,size_t size_of_bufer);
+        char* get_line(int line_number,char* buffer,std::size_t size_of_bufer);
         char* execute_querry(const char* patch_to_db,int num);
 
         
