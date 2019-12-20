@@ -11,6 +11,7 @@
 #include "querys.hpp"
 #include "./GUI/main_GUI.hpp"
 #include "./Serv/main_server.hpp"
+#include "./Serv/Network.hpp"
 const char* LZ25=\
 "\
 #####################################################################\n\

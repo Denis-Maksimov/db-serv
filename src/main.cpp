@@ -1,7 +1,66 @@
+//////////////////////////////////////////////////////////////////////////////////////////
+////--------------------- Уведомление о лицензии GPL --------------------------------/////
+//////////////////////////////////////////////////////////////////////////////////////////
+/* Drying monitor
+ * Copyright (C) 2019 Maksimov Denis dn.maksimow@gmail.com
+ *
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 2 of the License, or (at your option) any later version.
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this library. If not, see <http://www.gnu.org/licenses/>.
+ */
+//////////////////////////////////////////////////////////////////////////////////////////
+////------------------------------ main.cpp -----------------------------------------/////
+//////////////////////////////////////////////////////////////////////////////////////////
+/// \brief Сперва разделяем программу на потоки. 
+/// Общим интерфейсом потоков является переменная terminate, которая является признаком
+/// того, что потоку пора закругляться и освобождать ресурсы
+/// GUI() при завершении поднимает флаг terminate, чтобы остальные потоки завершились
+/// Server() в силу блокирующей функции accept() вызывает подпоток, который проверяет
+/// статус флага terminate и в случае "true" шлёт на сервер пустое сообщение, чтобы
+/// сдёрнуть функцию accept() с блокировки и поток мог самостоятельно завершиться
+/// main() вызывает потоки и ждёт их завершения
+///
+/// \author Максимов Денис Николаевич dn.maksimow@gmail.com
+///
+//////////////////////////////////////////////////////////////////////////////////////////
+////-----Рисунок 1 - Структурная схема того как организованы в программе-------------/////
+//////////////////////////////////////////////////////////////////////////////////////////
+//                                                                                      //
+//-main()----\------->\------------------------------join(GUI)-|-----join(Server)--.X...//
+//            \        \                                      \./                       //
+//             \        \----> Server()-\-------------------X...                        //
+//              \                        \           /.\                                //
+//               \                        \term()--- >| .X...                           //
+//                \                               / \                                   //
+//                 \                               |                                    //
+//                  \----> GUI() -------------- exit().X...                             //
+//                                                                                      //
+//////////////////////////////////////////////////////////////////////////////////////////
+//
+/**************
+ * TODO: 
+ * - выполнить проверку функций на возможные ошибки, исключая шанс одновременного
+ * обращения потоков к stderr
+ * 
+ * - выполнить передачу аргументов получаемых при вызове в аргументы потоков
+ * 
+*********/
 
 #include "main.h"
-#include "Network.hpp"
-#include <string.h>
+
+
+///////////////////////////
+// определение ID потоков
+///////////////////////////
 enum{
     GUI=0,
     SERVER,
@@ -9,8 +68,10 @@ enum{
 };
 
 
-
-
+///////////////////////////////////
+// порт на котором запустим сервак
+///////////////////////////////////
+#define PORT 12345
 
 //////////////////////////////////////////////////////////////////////////
 /// Главная программа, которая распределяет и вызывает потоки 
@@ -26,152 +87,113 @@ int main(int argc, char **argv){
     std::mutex mtx;
 
     std::thread thread_GUI(_system_GUI,std::ref(mtx),std::ref(terminate));
-    std::this_thread::yield();
+ 
 
     std::thread thread_SERVER(_system_Server,std::ref(mtx),std::ref(terminate));
-    std::this_thread::yield();
+ 
+    //waiting first thread
     thread_GUI.join();
+ 
     mtx.lock();
-    terminate=true;
+     terminate=true;
     mtx.unlock();
-    std::this_thread::yield();
-  //  thread_SERVER.join();
+ 
+    //waiting second thread
     thread_SERVER.join();
     puts("terminated!");
-   ////----этот-блок-работает-только-на-linux-вместо-потоков-тут-процессы---
-    //    
-    //-----fork()\--->fork()\-----> -----------> wait(0)-kill(Server)-exit()X...
-    //            \          \----> Server()-------------------X...                   
-    //             \----> GUI() -------------- exit().X...
-    //
-    //     pid_t pid[2];
-    //     //-------------------------------------------
-    //     //---Распараллеливание №1
-    //     //-------------------------------------------
-    //     pid[GUI]=fork();
-    //     switch (pid[GUI])
-    //     {
-    //     case 0:/* new process GUI()*/
-    //
-    //         status[GUI]=main_GUI(argc,argv);
-    //         puts("gui term");
-    //         exit(status[GUI]);
-    //         break;
-    //     case -1:
-    //         exit(-1);
-    //         /* error */
-    //         break;
-    //
-    //     default:
-    //        /* main process */
-    //         break;
-    //     }
-    //
-    //     //-------------------------------------------
-    //     //---Распараллеливание №2
-    //     //-------------------------------------------
-    //     pid[SERVER]=fork();
-    //     switch (pid[SERVER])
-    //     {
-    //     case 0:/* new process SERVER()*/
-    //
-    //         int status[SERVER];
-    //         status[SERVER]=main_Server(argc,argv);
-    //         puts("server term");
-    //         exit(status[SERVER]);
-    //         break;
-    //     case -1:
-    //         exit(-1);
-    //         /* error */
-    //         break;
-    //
-    //     default:
-    //        /* main process */
-    //         break;
-    //     }
-    //
-    //----------------------------------------------   
-    //  // ждём завершения дочерних процессов
-    //  //---------------------------------------------- 
-    //     pid_t terminated_pid=0;
-    //     status[MAIN]=0;
-    //     //Ждём пока хотя бы один сын не завершится
-    //     while(  (terminated_pid!=pid[GUI])  && 
-    //             (terminated_pid!=pid[SERVER])   ){
-
-    //         terminated_pid=wait(status+MAIN*sizeof(int));
-
-    //     }
-
-    //     if (terminated_pid==pid[GUI]) {
-    //         puts("ok");
-    //         kill(pid[SERVER],9);
-    //     } else if (terminated_pid==pid[SERVER]) {
-    //         puts("server error");
-    //         kill(pid[GUI],9);
-    //     }
-    //     else
-    //     {
-    //         puts("fatal error");
-    //         kill(pid[SERVER],9);
-    //         kill(pid[GUI],9);
-    //     }
-    // 
-   ////---конец-блока-для-процессорного-распараллеливания
-
-
-
 
  //-----------------------------------------------
  //   SQLquery obj("querys.data");   
  //   obj.execute_querry("TEST.db", Query::insert);
  //-----------------------------------------------
     
-
     return 0;
-
 }
 
+//---------------------------------------------------
 
 
 
-//подпрограмма графической оболочки
+//////////////////////////////////////////////////////
+/// подпрограмма графической оболочки
+/// @brief обработчик потока для ГУЯ
+/// Обеспечивает API для входа и выхода из потока
+/// @arg принимает мютекс и флаг выхода из программы
+/// мютекс обеспечивает безопасность доступа к 
+/// общим данным
+/// @note может быть любой HMI, в том числе CLI
+//////////////////////////////////////////////////////
 void _system_GUI(std::mutex &mtx, int& terminate_flag){
     puts("gui!");
     std::this_thread::yield();
     
-    //int main_GUI(int argc, char **argv);
+    // Полезные действия
+    int status=main_GUI(int(0), (char**)0);
 
-}
+    ///TODO: handle status 
+
+    // Поднимаем флаг завершения программы
+    mtx.lock();
+        terminate_flag=true;
+    mtx.unlock();
+
+}//_system_GUI
+
+
+//---------------------------------------------------
 
 
 
 
-
-
-
-
-#define PORT 12345
-//подпрограмма сервера
+//////////////////////////////////////////////////////
+/// подпрограмма сервера
+/// @brief обработчик потока для сервера
+/// Обеспечивает API для входа и выхода из потока
+/// @arg принимает мютекс и флаг выхода из программы
+/// мютекс обеспечивает безопасность доступа к 
+/// общим данным
+//////////////////////////////////////////////////////
 void _system_Server(std::mutex &mtx, int& terminate_flag){
 
-    int return_code=0;
+    
     std::thread thread_SERVER_term(_Server_term,std::ref(mtx),std::ref(terminate_flag));
+    
+    //готовим входные данные
+    int argc=sizeof(int)*2;
     int _term=0;
-    while (true)
-    {
-        mtx.lock();
-        _term=terminate_flag;
-        mtx.unlock();
-        if(_term) break;
-        std::this_thread::yield();
-    }/* condition */
-    puts("terminated serv");
-    std::this_thread::yield();
-    thread_SERVER_term.join();
-    //int main_Server(int argc, char **argv);
-}
+    int port=PORT;
 
+    //мне пох, кастомизирую как хочу
+    //я в курсах как память распределяется
+    char* t=(char*)terminate_flag;
+    char* p=(char*)(&port);
+    char* argv[]={t,p};
+
+    //execute
+    int return_code = main_Server(argc, argv);
+
+    ///TODO: handle status 
+
+    printf("server terminated whith status %s",return_code);
+    std::this_thread::yield();
+
+    thread_SERVER_term.join();
+    
+}//_Server_term
+
+
+//----------------------------------------------------
+
+
+
+//////////////////////////////////////////////////////
+/// @brief обработчик потока завершения сервера
+/// в цикле проверяет флаг выхода и завершает поток
+/// сервера (деликатно)
+/// @arg принимает мютекс и флаг выхода из программы
+/// мютекс обеспечивает безопасность доступа к 
+/// общим данным
+//////////////////////////////////////////////////////
 void _Server_term(std::mutex &mtx, int& terminate_flag){
     int _term=0;
 
@@ -185,10 +207,12 @@ void _Server_term(std::mutex &mtx, int& terminate_flag){
         std::this_thread::yield();
     }
     std::this_thread::yield();
+
     //terminate
-   // Network client(100);
-   // client.send_(PORT,"127.0.0.1");
+    Network client(1000);
+    client.send_(PORT,"127.0.0.1");
 
+}//_Server_term
 
+//---------------------------------------------------
 
-}
