@@ -70,47 +70,56 @@ void Network::init(int port)
 
 //--------------------------------------------------------------------------
 
-void Network::working(){
+void Network::working(int* do_working){
     int n=0;
-    bool do_working=true;
-    while(do_working) {
+    //char* bubu=(char*)malloc(1);
+    //int bubu_size=0;
+
+    while(!(*do_working)) {
             puts("before accept");
             connfd = accept(listenfd, (struct sockaddr*)0L, 0L);
 
 
         /////////////////
-        ///  Receive  ///
+        ///  Receive 
         /// Пока есть буфер отправляем в стдоут
         /////////////////
-        puts("before read");
-        while ( (n = read(connfd, recvBuff, sizeof(recvBuff)-1)) > 0)
-        {
-            //////////////////////////////
+ //       while ( (n = read(connfd, recvBuff, MTU-1)) > 0)
+   //     {
+            //в новый буфер бахаем
+          //  realloc(bubu, bubu_size+n);
+           // strncpy(bubu+bubu_size, recvBuff, n);
+     //       bubu_size += n;
+
+            n = read(connfd, recvBuff, MTU-1);
             recvBuff[n] = 0;
             if(fputs(recvBuff, stdout) ==  -1)
             {
-                printf("\n Error : Fputs error\n");
+                printf("\n Error : fputs error\n");
             }
 
-            if(strstr(recvBuff,"пиздец")>=0){
-                do_working=false;
-                //break;
+            // if(strstr(recvBuff,"пиздец")>=0){
+            //     do_working=false;
 
-            }
-        }
+            // }
+     //   }//END_WHILE
 
         if(n < 0)
         {
             printf("\n Read error \n");
         }
 
+        parse(recvBuff,connfd);
+       // free(bubu);
 
         /////////////////////////////////////////////////////////////
-            sprintf(sendBuff, "HTTP/1.1 200 OK\r\n\r\nHello");
-            write(connfd, sendBuff, strlen(sendBuff));
+      //      sprintf(sendBuff, "HTTP/1.1 200 OK\r\n\r\nHello\0");
+     //       send(connfd, sendBuff, strlen(sendBuff),0);
 
             close(connfd);
+            memset(recvBuff,0,MTU);
             sleep(1);
+
      }
 puts("end work");
 }

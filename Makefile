@@ -27,6 +27,9 @@ OBJ+= ./main_server.o
 
 SRC+= ./src/Serv/Network.cpp
 OBJ+= ./Network.o
+
+SRC+= ./src/Serv/http/http.cpp
+OBJ+= ./http.o
 #--Базы данных
 SRC+= ./src/file1.cpp
 OBJ+= ./file1.o
@@ -88,6 +91,12 @@ Network.o: ./src/Serv/Network.cpp
 
 #----------------------------------
 
+http.o: ./src/Serv/http/http.cpp
+		#
+		#compilling main.cpp
+		g++  ./src/Serv/http/http.cpp $(CFLAGS)
+
+#----------------------------------
 clean:
 		rm *.o
 

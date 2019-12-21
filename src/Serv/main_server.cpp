@@ -28,14 +28,15 @@
 #include "main_server.hpp"
 
 
-
-    int main_Server(int argc, char **argv)
-
+int main_Server(int argc, char **argv)
 {
-    Network servr(1024);
-
-    servr.init(8080);
-    servr.working();
+    int* term_flag  = (int*)(argv[0]);
+    int* port       = (int*)(argv[1]);
+    int MTU         = 1024;
+    
+    Network servr(MTU);
+    servr.init(*port);
+    servr.working(term_flag);
 
 
     return 0;
