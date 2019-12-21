@@ -174,7 +174,7 @@ void _system_Server(std::mutex &mtx, int& terminate_flag){
 
     ///TODO: handle status 
 
-    printf("server terminated whith status %s",return_code);
+    printf("server terminated whith status %i\n",return_code);
     std::this_thread::yield();
 
     thread_SERVER_term.join();
@@ -211,8 +211,15 @@ void _Server_term(std::mutex &mtx, int& terminate_flag){
     //terminate
     Network client(1000);
     puts("client send");
-    client.send_(PORT,"127.0.0.1");
 
+    //сервер должен обидеться на мат и завершиться
+    char msg[]="пиздец\n";
+
+    char* SB=client.get_send_buffer();
+    strcpy(SB,msg);
+
+    client.send_termin(PORT,"127.0.0.1");
+    puts("termOk");
 }//_Server_term
 
 //---------------------------------------------------

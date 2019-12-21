@@ -38,6 +38,9 @@ Network::~Network(){
     free(sendBuff);
     free(recvBuff);
 }
+
+//--------------------------------------------------------------------------
+
 void Network::init(int port)
 {
     listen_port=port;
@@ -65,9 +68,13 @@ void Network::init(int port)
 
 }
 
+//--------------------------------------------------------------------------
+
 void Network::working(){
     int n=0;
-    while(1) {
+    bool do_working=true;
+    while(do_working) {
+            puts("before accept");
             connfd = accept(listenfd, (struct sockaddr*)0L, 0L);
 
 
@@ -75,6 +82,7 @@ void Network::working(){
         ///  Receive  ///
         /// Пока есть буфер отправляем в стдоут
         /////////////////
+        puts("before read");
         while ( (n = read(connfd, recvBuff, sizeof(recvBuff)-1)) > 0)
         {
             //////////////////////////////
@@ -82,6 +90,12 @@ void Network::working(){
             if(fputs(recvBuff, stdout) ==  -1)
             {
                 printf("\n Error : Fputs error\n");
+            }
+
+            if(strstr(recvBuff,"пиздец")>=0){
+                do_working=false;
+                //break;
+
             }
         }
 
@@ -91,22 +105,22 @@ void Network::working(){
         }
 
 
-/////////////////////////////////////////////////////////////
+        /////////////////////////////////////////////////////////////
             sprintf(sendBuff, "HTTP/1.1 200 OK\r\n\r\nHello");
             write(connfd, sendBuff, strlen(sendBuff));
 
             close(connfd);
             sleep(1);
      }
-
+puts("end work");
 }
 
 
-
+//--------------------------------------------------------------------------
 
 //<ip of server>
 int Network::send_(int port, const char *ip_adr) {
-
+    //Инициализации
     int sockfd = 0, n = 0;
 
 
@@ -135,30 +149,86 @@ int Network::send_(int port, const char *ip_adr) {
        printf("\n Error : Connect Failed \n");
        return 1;
     }
-
+    sleep(1);
     send(sockfd, sendBuff, strlen(sendBuff), 0); 
 
-
-
-
+  //  int flags=fcntl(sockfd,F_GETFL,0);
+  //  fcntl(sockfd,F_SETFL,flags|O_NONBLOCK);
 
       /////////////////
      ///  Receive  ///
      /// Пока есть буфер отправляем в стдоут
      /////////////////
-    while ( (n = read(sockfd, recvBuff, sizeof(recvBuff)-1)) > 0)
-    {
+    
+    do {
+//        n = recv(sockfd,recvBuff,MTU-1,0);
+        printf("\nFFF!!!\n");
+        
+       n = read(sockfd, recvBuff, MTU-1);
+        if(n==0)break;
+
+        
         recvBuff[n] = 0;
         if(fputs(recvBuff, stdout) ==  -1)
         {
             printf("\n Error : Fputs error\n");
         }
-    }
+        printf("\nFFF%i\n",n);
+        
+    }while (n);
+    close(sockfd);
 
     if(n < 0)
     {
         printf("\n Read error \n");
     }
-
     return 0;
 }
+
+//--------------------------------------------------------------------------
+
+//<ip of serve>
+int Network::send_termin(int port, const char *ip_adr){
+
+    //Инициализации
+    int sockfd = 0, n = 0;
+
+
+    if((sockfd = socket(AF_INET, SOCK_STREAM, 0)) < 0)
+    {
+        printf("\n Error : Could not create socket \n");
+        return 1;
+    }
+
+    serv_addr.sin_family = AF_INET;
+    serv_addr.sin_port = htons(port);
+
+    if(inet_pton(AF_INET, ip_adr, &serv_addr.sin_addr)<=0)
+    {
+        printf("\n inet_pton error occured\n");
+        return 1;
+    }
+
+    
+
+      /////////////////
+     ///  Connect  ///
+    /////////////////
+    if( connect(sockfd, (struct sockaddr *)&serv_addr, sizeof(serv_addr)) < 0)
+    {
+       printf("\n Error : Connect Failed \n");
+       return 1;
+    }
+    sleep(1);
+    send(sockfd, sendBuff, strlen(sendBuff), 0); 
+
+  //  int flags=fcntl(sockfd,F_GETFL,0);
+  //  fcntl(sockfd,F_SETFL,flags|O_NONBLOCK);
+
+    
+    close(sockfd);
+    return 0;
+ 
+}
+
+//--------------------------------------------------------------------------
