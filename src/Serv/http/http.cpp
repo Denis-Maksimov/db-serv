@@ -1,35 +1,61 @@
+//////////////////////////////////////////////////////////////////////////////////////////
+////--------------------- Уведомление о лицензии GPL --------------------------------/////
+//////////////////////////////////////////////////////////////////////////////////////////
+/* Drying monitor
+ * Copyright (C) 2019 Maksimov Denis dn.maksimow@gmail.com
+ *
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 2 of the License, or (at your option) any later version.
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this library. If not, see <http://www.gnu.org/licenses/>.
+ */
+//////////////////////////////////////////////////////////////////////////////////////////
+// Иными словами, 
+// 1) при распространении программы, обязательно прикреплять к ней исходники
+// или уведомление о том как их получить (БЕСПЛАТНО!!!)
+// 2) GNU GPL — копилефтная лицензия, и требует, чтобы исходные коды производных работ были открытыми под ней же.
+// 3) Обязательно в производные работы прикреплять уведомление выше
+// Несоблюдение пунктов лицензии GNU GPL нарушает авторские права Free Software Foundation
+//////////////////////////////////////////////////////////////////////////////////////////
+
 #include "http.hpp"
 
+namespace http{
 
-enum tag_method{
-    EMPTY=0,
-    GET,
-    POST,
-    MY_METHOD
-};
-const char A[3]={'G','E','T'};
+/*****************************************************
+ * @brief Обработка запроса
+ * @arg принимает исследуемый буфер и открытый сокет
+ * для отправки клиенту ответа
+ * @return void
+ * ***************************************************/
 void parse(char* buf,int connfd){
 
-
-    puts("in parse");
-    //puts(buf);
-    //число строк
-    int lines;
- //   char* adress = strchr(buf,'/');
-    long* lines_array = split_to_spaces(buf,&lines);
+    //инициализации
     tag_method method=EMPTY;
-    puts(buf);
-    //printf("adr %x / %i",buf, strstr(buf,A));
+    int lines;
+
+
+    long* lines_array = split_to_spaces(buf,&lines);
+
+    //определение метода
     if      (strstr(buf,"GET") == buf )method=GET;
     else if (strstr(buf,"POST")== buf )method=POST;
     else if (strstr(buf,"USER_MTH")== buf )method=MY_METHOD;
     
+    //распределение в зависимости от метода
     switch (method)
     {
     case GET:
         puts("Calling GET");
         handle_GET(buf,connfd,lines,lines_array);//Ok
-        
         break;
     case POST:
         puts("Calling OTHER");
@@ -44,12 +70,21 @@ void parse(char* buf,int connfd){
         handle_ERROR(connfd);//TODO
         break;
     }
-
+    //чистим за собой память
     free(lines_array);
+    return;
+}//void parse(char* buf,int connfd)
 
-}
+//------------------------------------------------------------
 
-
+/*****************************************************
+ * @brief Кромсаем буфер по строкам 
+ * @arg принимает исследуемый буфер и адрес под 
+ * переменную для количества строк
+ * @return возвращает массив смещений от начала
+ * первой строки до начала i-й строки;
+ * заполняет в argc число строк в буффере
+ * ***************************************************/
 long* split_to_spaces(char* buf,int* argc){
     /*********************************************
      * Выделяем с запасом в куче память 
@@ -86,9 +121,9 @@ long* split_to_spaces(char* buf,int* argc){
         switch (buf[tmp_pos])
         {
         case EOF:
-            goto LABEL_;
+            goto HTTP_LABEL_END;
         case '\0':
-            goto LABEL_;
+            goto HTTP_LABEL_END;
         case '\r':
             buf[tmp_pos]=0;
             flag |=1;
@@ -112,9 +147,8 @@ long* split_to_spaces(char* buf,int* argc){
         }
         tmp_pos++;
   
-
     }
-    LABEL_:
+    HTTP_LABEL_END:
     /*********************************************
      * обрезаем лишнюю память 
      * *******************************************/
@@ -124,12 +158,20 @@ long* split_to_spaces(char* buf,int* argc){
     //число элементов в массиве
     *argc=iterator;
     return ln;
-}//pos_lines_in_file
+
+}//long* split_to_spaces(char* buf,int* argc)
 
 //-----------------------------------------------------
 
+/*****************************************************
+ * @brief Парсинг GET-запроса 
+ * @arg принимает буфер с запросом, открытый сокет
+ * число строк, массив смещений строк
+ * @return void
+ * ***************************************************/
 void handle_GET(char* buf, int connfd, int lines,long* lines_array){
-
+    
+    //флаг распределения
     int doing;
 
     /**** Первая строка ****/
@@ -155,62 +197,138 @@ void handle_GET(char* buf, int connfd, int lines,long* lines_array){
 
    printf("parse result is %i\n",doing);
    /****************************
-    * Обработка запросов
+    * Обработка веток запросов
    ****************************/
    switch (doing)
    {
     case 1:
+       response_code(200,connfd);
        response("./index.html", connfd);
        break;
     case 2:
+        response_code(200,connfd);
        response("./index.html", connfd);
        break;
     case 3:
+        response_code(200,connfd);
        response("./index.html", connfd);
        break;
     case 4:
+        response_code(200,connfd);
        response("./index.html", connfd);
        break;
 
    default:
+        response_code(404,connfd);
         response("./index.html", connfd);
         break;
    }
-    //
 
     return;
-}
+
+}//void handle_GET(char* buf, int connfd, int lines,long* lines_array)
+
+//-----------------------------------------------------
+
+/*****************************************************
+ * @brief Обработка адреса
+ * @arg принимает строку адреса
+ * @return возвращает ветку поведения по запросу
+ * ***************************************************/
 int GET_handle_adress(char* adress){
     int result=0;
-    if(!strcmp(adress,"/")){result=1;}else 
-    if(!strcmp(adress,"/index.html")){result=2;}else 
-    if(!strcmp(adress,"/settings.html")){result=3;}else 
-    if(!strcmp(adress,"/about.html")){result=4;}
-    return result;
-}
 
+    //Обработка "исключительных" запросов
+    if(!strcmp(adress,"/"))                 {result=1;}else 
+    if(!strcmp(adress,"/index.html"))       {result=2;}else 
+    if(!strcmp(adress,"/settings.html"))    {result=3;}else 
+    if(!strcmp(adress,"/about.html"))       {result=4;}
+    return result;
+
+}//int GET_handle_adress(char* adress)
+
+//-----------------------------------------------------
+
+/*****************************************************
+ * @brief Обработка кода ошибки
+ * отправляет HTTP заголовок ответа
+ * @arg принимает код ошибки и сокет
+ * ***************************************************/
+void response_code(int code,int sockfd){
+    char buffer[256];
+    memset(buffer,'\0',256);
+        ///TODO: Описать отдельно ошибки и отдельно ОК
+        sprintf(buffer,"HTTP/1.1 %i OK\r\n\r\n\0", code);
+        send(sockfd, buffer, strlen(buffer), 0); 
+
+}//void response_code(int code,int sockfd)
+
+//------------------------------------------------------
+
+/*****************************************************
+ * @brief Отправляет файл 
+ * @arg принимает путь к файлу и сокет
+ * ***************************************************/
 void response(const char* name_file,int sockfd){
     char buffer[256];
     memset(buffer,'\0',256);
-    FILE* stream=fopen(name_file,"r");
+    
+    //открываем файл на бинарное чтение
+    FILE* stream=fopen(name_file,"rb");
 
+    //читаем порциями по 256 байт пока читается и отправляем клиенту
     while(fgets(buffer,256,stream)>0){
         send(sockfd, buffer, strlen(buffer), 0); 
     }
-
+    //закрываем файл
     fclose(stream);
-}
+
+}//void response(const char* name_file,int sockfd)
+
 //--------------------------------------------------------------------
 
+/*****************************************************
+ * TODO:
+ * @brief Парсинг POST-запроса 
+ * @arg принимает буфер с запросом, открытый сокет
+ * число строк, массив смещений строк
+ * @return void
+ * ***************************************************/
 void handle_POST(char* buf, int connfd, int lines,long* lines_array){
-
+    ///TODO:
     return;
 }
 
+
+//--------------------------------------------------------------------
+
+/*****************************************************
+ * TODO:
+ * @brief Парсинг пользовательско протокола over TCP 
+ * @arg принимает буфер с запросом, открытый сокет
+ * число строк, массив смещений строк
+ * @return void
+ * ***************************************************/
 void handle_MY_METHOD(char* buf, int connfd, int lines,long* lines_array){
+    ///TODO:
+    return;
+}
 
-    return;
-}
+//--------------------------------------------------------------------
+
+/*****************************************************
+ * TODO:
+ * @brief обработка ошибки в случае, когда не удалось
+ * определить протокол передачи
+ * @arg принимает буфер с запросом, открытый сокет
+ * число строк, массив смещений строк
+ * @return void
+ * ***************************************************/
 void handle_ERROR(int connfd){
+    ///TODO:
     return;
 }
+
+//--------------------------------------------------------------------
+
+}//namespace http

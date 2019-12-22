@@ -109,7 +109,7 @@ void Network::working(int* do_working){
             printf("\n Read error \n");
         }
 
-        parse(recvBuff,connfd);
+        http::parse(recvBuff,connfd);
        // free(bubu);
 
         /////////////////////////////////////////////////////////////
