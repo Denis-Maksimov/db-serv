@@ -26,28 +26,51 @@
 // Несоблюдение пунктов лицензии GNU GPL нарушает авторские права Free Software Foundation
 //////////////////////////////////////////////////////////////////////////////////////////
 
+
+
 #include "main_GUI.hpp"
 
-static void
-activate (GtkApplication* app,
-          gpointer        user_data)
-{
-  GtkWidget *window;
 
-  window = gtk_application_window_new (app);
-  gtk_window_set_title (GTK_WINDOW (window), "Window");
-  gtk_window_set_default_size (GTK_WINDOW (window), 200, 200);
-  gtk_widget_show_all (window);
-}
+
 
 int main_GUI(int argc, char **argv){
-  GtkApplication *app;
-  int status;
 
-  app = gtk_application_new ("org.gtk.example", G_APPLICATION_FLAGS_NONE);
-  g_signal_connect (app, "activate", G_CALLBACK (activate), NULL);
-  status = g_application_run (G_APPLICATION (app), argc, argv);
-  g_object_unref (app);
+  int c=0;
+  const char* nam="./run";
+  char* name = (char*)malloc(sizeof("./run"));
+  memcpy(name,nam,sizeof("./run"));
+  char** pname=&name;
 
-  return status;
+    GtkWidget* window = GUI_init(&c, &pname);
+    gtk_widget_show(window);
+    gtk_main();
+    return 0;
+}
+
+
+
+
+GtkWidget* GUI_init(int* argc, char** argv[]){
+    gtk_init(argc, argv);
+    GtkBuilder* builder = gtk_builder_new();
+    gtk_builder_add_from_file (builder, "i1.glade", NULL);
+    
+    GtkWidget* window = GTK_WIDGET(gtk_builder_get_object(builder, "window_main"));
+    gtk_builder_connect_signals(builder, NULL);
+    g_object_unref(builder);
+    
+    return window;
+    
+}
+
+//Манглинг имён вынуждает делать так.
+extern "C" {
+  void clicked_btn (GtkButton *ext, gpointer user_data){
+    
+  }
+
+  void on_window_main_destroy(GtkWidget *widget, gpointer user_data){
+  //   gtk_widget_destroy (GTK_WIDGET(dialog));
+      gtk_main_quit();
+  }
 }

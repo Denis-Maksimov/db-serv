@@ -39,7 +39,7 @@
 //            \        \                                      \./                       //
 //             \        \----> Server()-\-------------------X...                        //
 //              \                        \           /.\                                //
-//               \                        \term()--- >| .X...                           //
+//               \                        \cycle()-- >| .X...                           //
 //                \                               / \                                   //
 //                 \                               |                                    //
 //                  \----> GUI() -------------- exit().X...                             //
@@ -87,8 +87,6 @@ int main(int argc, char **argv){
     std::mutex mtx;
 
     std::thread thread_GUI(_system_GUI,std::ref(mtx),std::ref(terminate));
- 
-
     std::thread thread_SERVER(_system_Server,std::ref(mtx),std::ref(terminate));
  
     //waiting first thread
@@ -101,12 +99,7 @@ int main(int argc, char **argv){
     //waiting second thread
     thread_SERVER.join();
     puts("terminated!");
-
- //-----------------------------------------------
- //   SQLquery obj("querys.data");   
- //   obj.execute_querry("TEST.db", Query::insert);
- //-----------------------------------------------
-    
+   
     return 0;
 }
 
@@ -156,7 +149,7 @@ void _system_GUI(std::mutex &mtx, int& terminate_flag){
 void _system_Server(std::mutex &mtx, int& terminate_flag){
 
     
-    std::thread thread_SERVER_term(_Server_term,std::ref(mtx),std::ref(terminate_flag));
+    std::thread thread_Cyclycs_works(_Cyclycs_works,std::ref(mtx),std::ref(terminate_flag));
     
     //готовим входные данные
     int argc=sizeof(int)*2;
@@ -177,34 +170,47 @@ void _system_Server(std::mutex &mtx, int& terminate_flag){
     printf("server terminated whith status %i\n",return_code);
     std::this_thread::yield();
 
-    thread_SERVER_term.join();
+    thread_Cyclycs_works.join();
     
-}//_Server_term
+}//_Cyclycs_works
 
 
 //----------------------------------------------------
 
-
-
+//const char* db_name= "TEST1.db";
+//const char* querys_data="querys.data";
 //////////////////////////////////////////////////////
-/// @brief обработчик потока завершения сервера
-/// в цикле проверяет флаг выхода и завершает поток
+/// @brief Организация циклических алгоритмов
+/// 1)в цикле проверяет флаг выхода и завершает поток
 /// сервера (деликатно)
+/// 2)Периодически вызывает опрос БД
 /// @arg принимает мютекс и флаг выхода из программы
 /// мютекс обеспечивает безопасность доступа к 
 /// общим данным
 //////////////////////////////////////////////////////
-void _Server_term(std::mutex &mtx, int& terminate_flag){
-    int _term=0;
+void _Cyclycs_works(std::mutex &mtx, int& terminate_flag){
 
+    int _term=0;
+    int argc=0;
+    const char* argv[]= {0};
+    int clock=0;
     //do
     while (true)
     {
+        (clock--==0)?(clock=60):(clock);
+
         mtx.lock();
         _term=terminate_flag;
         mtx.unlock();
         if(_term) break;
-        std::this_thread::yield();
+
+          ////////////////////////////////
+         /// обращаемся к базе данных ///
+        ////////////////////////////////
+        semafor_db(clock);
+       
+        std::this_thread::sleep_for(std::chrono::milliseconds(500));
+        
     }
     std::this_thread::yield();
 
@@ -220,7 +226,23 @@ void _Server_term(std::mutex &mtx, int& terminate_flag){
 
     client.send_termin(PORT,"127.0.0.1");
     puts("termOk");
-}//_Server_term
+}//_Cyclycs_works
 
 //---------------------------------------------------
+
+//////////////////////////////////////////////////////
+/// @brief Обёртка над функцией периодического опроса БД
+/// 
+/// 
+/// @arg принимает счётчик циклов, 
+//////////////////////////////////////////////////////
+void semafor_db(int clock){
+    if (clock) return;
+    int return_code=0;
+    int argc=0;
+    const char* argv[]= {0};
+    return_code = main_Querry(argc, argv);
+
+    return;
+}
 

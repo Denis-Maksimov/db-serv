@@ -1,14 +1,18 @@
 #----------------------------------
 
 #libs
-LIBS:= -ldl -lpthread `pkg-config --libs gtk+-3.0`
+LIBS:= -ldl -lpthread `pkg-config --libs gtk+-3.0` -rdynamic
 
 #flags
 CFLAGS:= -c -O2 
 
 #include "local.h"
 CFLAGS+= -I./lib
-CFLAGS+= -I./src `pkg-config --cflags --libs gtk+-3.0`
+CFLAGS+= -I./src
+
+#for GTK+
+CFLAGS+= `pkg-config --cflags --libs gtk+-3.0`
+
 CFLAGS+= -I./src/Serv
 CFLAGS+= -I./src/GUI
 CFLAGS+= -I./lib/sqlite-amalgamation-3071300
@@ -18,9 +22,12 @@ CFLAGS+= -I/lib/x86_64-linux-gnu/glib-2.0/include
 
 SRC:= ./src/main.cpp
 OBJ:= ./main.o
+
 #--GUI
-SRC+= ./src/main_GUI.cpp
+SRC+= ./src/GUI/main_GUI.cpp
 OBJ+= ./main_GUI.o
+
+
 #--Server
 SRC+= ./src/Serv/main_server.cpp
 OBJ+= ./main_server.o
@@ -30,9 +37,14 @@ OBJ+= ./Network.o
 
 SRC+= ./src/Serv/http/http.cpp
 OBJ+= ./http.o
+
+
 #--Базы данных
-SRC+= ./src/file1.cpp
+SRC+= ./src/Querry/file1.cpp
 OBJ+= ./file1.o
+
+SRC+= ./src/Querry/main_Querry.cpp
+OBJ+= ./main_Querry.o
 
 SRC+= ./lib/sqlite-amalgamation-3071300/sqlite.c
 OBJ+= ./sqlite3.o
@@ -56,10 +68,17 @@ main.o: ./src/main.cpp
 
 #----------------------------------
 
-file1.o: ./src/file1.cpp
+file1.o: ./src/Querry/file1.cpp
 		#
 		#compilling file1.cpp
-		g++  ./src/file1.cpp $(CFLAGS)
+		g++  ./src/Querry/file1.cpp $(CFLAGS)
+
+#----------------------------------
+
+main_Querry.o: ./src/Querry/main_Querry.cpp
+		#
+		#compilling main_Querry.cpp
+		g++  ./src/Querry/main_Querry.cpp $(CFLAGS)
 
 #----------------------------------
 
@@ -72,14 +91,14 @@ sqlite3.o: ./lib/sqlite-amalgamation-3071300/sqlite3.c
 
 main_GUI.o: ./src/GUI/main_GUI.cpp
 		#
-		#compilling main.cpp
+		#compilling main_GUI.cpp
 		g++  ./src/GUI/main_GUI.cpp $(CFLAGS)
 
 #----------------------------------
 
 main_server.o: ./src/Serv/main_server.cpp
 		#
-		#compilling main.cpp
+		#compilling main_server.cpp
 		g++  ./src/Serv/main_server.cpp $(CFLAGS)
 
 #----------------------------------
@@ -93,7 +112,7 @@ Network.o: ./src/Serv/Network.cpp
 
 http.o: ./src/Serv/http/http.cpp
 		#
-		#compilling main.cpp
+		#compilling http.cpp
 		g++  ./src/Serv/http/http.cpp $(CFLAGS)
 
 #----------------------------------

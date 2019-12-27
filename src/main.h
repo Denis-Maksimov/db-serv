@@ -34,10 +34,12 @@
 #include <unistd.h>
 
 
-#include "file1.hpp"
-#include "querys.hpp"
+//#include "file1.hpp"
+
+#include "./Querry/main_Querry.hpp"
 #include "./GUI/main_GUI.hpp"
 #include "./Serv/main_server.hpp"
+
 #include "./Serv/Network.hpp"
 const char* LZ25=\
 "\
@@ -56,4 +58,6 @@ void _system_Server(std::mutex &mtx, int& terminate_flag); //Оболочка
 
 //int main_Server(int argc, char **argv);
 
-void _Server_term(std::mutex &mtx, int& terminate_flag);
+void _Cyclycs_works(std::mutex &mtx, int& terminate_flag);
+
+void semafor_db(int clock);

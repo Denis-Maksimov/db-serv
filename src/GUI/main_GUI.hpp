@@ -26,5 +26,9 @@
 // Несоблюдение пунктов лицензии GNU GPL нарушает авторские права Free Software Foundation
 //////////////////////////////////////////////////////////////////////////////////////////
 #include <gtk/gtk.h>
+#include <stdlib.h>
 
+
+GtkWidget* GUI_init(int* argc, char** argv[]);
 int main_GUI(int argc, char **argv);
+

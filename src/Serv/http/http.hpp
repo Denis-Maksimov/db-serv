@@ -44,6 +44,13 @@ namespace http{
         POST,       //метод POST
         MY_METHOD   //пользовательский метод
     };
+    //для свитча распределения адреса
+    enum tag_branch{
+        E404=0,     //404
+        INDEX,      //index.html
+        SETTINGS,   //settings.html
+        ABOUT       //about.html
+    };
 
 /***************************************************
  * @parse:
@@ -127,7 +134,7 @@ namespace http{
     long* split_to_spaces(char* buf,int* argc);
     void response_code(int code,int sockfd);
     void response(const char* name_file,int sockfd);
-    int GET_handle_adress(char* adress);
+    tag_branch GET_handle_adress(char* adress);
     void handle_GET(char* buf, int connfd, int lines,long* lines_array);
     void handle_POST(char* buf, int connfd, int lines,long* lines_array);
     void handle_MY_METHOD(char* buf, int connfd, int lines,long* lines_array);

@@ -39,7 +39,7 @@ namespace http{
 void parse(char* buf,int connfd){
 
     //инициализации
-    tag_method method=EMPTY;
+    tag_method method = EMPTY;
     int lines;
 
 
@@ -172,7 +172,7 @@ long* split_to_spaces(char* buf,int* argc){
 void handle_GET(char* buf, int connfd, int lines,long* lines_array){
     
     //флаг распределения
-    int doing;
+    tag_branch doing;
 
     /**** Первая строка ****/
 
@@ -180,6 +180,8 @@ void handle_GET(char* buf, int connfd, int lines,long* lines_array){
     char* adress=strchr(buf,'/');
     char* cursor=strchr(adress,' ');
     *cursor=0;
+
+    
     doing = GET_handle_adress(adress);
 
     cursor++;
@@ -201,26 +203,26 @@ void handle_GET(char* buf, int connfd, int lines,long* lines_array){
    ****************************/
    switch (doing)
    {
-    case 1:
+    case INDEX:
        response_code(200,connfd);
        response("./index.html", connfd);
        break;
-    case 2:
+    case SETTINGS:
         response_code(200,connfd);
-       response("./index.html", connfd);
+       response("./settings.html", connfd);
        break;
-    case 3:
+    case ABOUT:
         response_code(200,connfd);
-       response("./index.html", connfd);
+       response("./about.html", connfd);
        break;
-    case 4:
+    case E404:
         response_code(200,connfd);
-       response("./index.html", connfd);
+       response("./404.html", connfd);
        break;
 
    default:
         response_code(404,connfd);
-        response("./index.html", connfd);
+        response("./404.html", connfd);
         break;
    }
 
@@ -235,14 +237,14 @@ void handle_GET(char* buf, int connfd, int lines,long* lines_array){
  * @arg принимает строку адреса
  * @return возвращает ветку поведения по запросу
  * ***************************************************/
-int GET_handle_adress(char* adress){
-    int result=0;
+tag_branch GET_handle_adress(char* adress){
+    tag_branch result=E404;
 
     //Обработка "исключительных" запросов
-    if(!strcmp(adress,"/"))                 {result=1;}else 
-    if(!strcmp(adress,"/index.html"))       {result=2;}else 
-    if(!strcmp(adress,"/settings.html"))    {result=3;}else 
-    if(!strcmp(adress,"/about.html"))       {result=4;}
+    if(!strcmp(adress,"/"))                 {result=INDEX;}else 
+    if(!strcmp(adress,"/index.html"))       {result=INDEX;}else 
+    if(!strcmp(adress,"/settings.html"))    {result=SETTINGS;}else 
+    if(!strcmp(adress,"/about.html"))       {result=ABOUT;}
     return result;
 
 }//int GET_handle_adress(char* adress)
