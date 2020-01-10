@@ -1,0 +1,49 @@
+{
+    // Используйте IntelliSense, чтобы узнать о возможных атрибутах.
+    // Наведите указатель мыши, чтобы просмотреть описания существующих атрибутов.
+    // Для получения дополнительной информации посетите: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "g++ build and debug active file",
+            "type": "cppdbg",
+            "request": "launch",
+            "program": "${fileDirname}/${fileBasenameNoExtension}",
+            "args": [],
+            "stopAtEntry": false,
+            "cwd": "${workspaceFolder}",
+            "environment": [
+                {"includePath":[
+                    "/usr/include/c++/4.2.1",
+                    "/usr/local/include",
+                    "/usr/include",
+                    "/usr/include/atk-1.0",
+                    "/usr/include/gtk-3.0",
+                    "/usr/include/glib-2.0",
+                    "/lib/x86_64-linux-gnu/glib-2.0/include",
+                    "/usr/include/linux",
+                    "/usr/include/c++/8",
+                    "/usr/include/c++/8/tr1",
+                    "/usr/include/x86_64-linux-gnu/c++/8",
+                    "/usr/include/x86_64-linux-gnu/c++/gnu",
+                    "/usr/include/x86_64-linux-gnu/",
+                    "/usr/include/gdk-pixbuf-2.0/",
+                    "/usr/include/cairo",
+                    "/usr/include/pango-1.0",
+            ],}
+            ],
+            
+            "externalConsole": false,
+            "MIMode": "gdb",
+            "setupCommands": [
+                {
+                    "description": "Включить автоматическое форматирование для gdb",
+                    "text": "-enable-pretty-printing",
+                    "ignoreFailures": true
+                }
+            ],
+            "preLaunchTask": "g++ build active file",
+            "miDebuggerPath": "/usr/bin/gdb"
+        }
+    ]
+}

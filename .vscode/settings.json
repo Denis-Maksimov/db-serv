@@ -1,0 +1,22 @@
+{
+        "C_Cpp.default.systemIncludePath": [
+            "/usr/include/c++/4.2.1",
+            "/usr/local/include",
+            "/usr/include",
+            "/usr/include/atk-1.0",
+            "/usr/include/gtk-3.0",
+            "/usr/include/glib-2.0",
+            "/lib/x86_64-linux-gnu/glib-2.0/include",
+            "/usr/include/linux",
+            "/usr/include/c++/8",
+            "/usr/include/c++/8/tr1",
+            "/usr/include/x86_64-linux-gnu/c++/8",
+            "/usr/include/x86_64-linux-gnu/c++/gnu",
+            "/usr/include/x86_64-linux-gnu/",
+            "/usr/include/gdk-pixbuf-2.0/",
+            "/usr/include/cairo",
+            "/usr/include/pango-1.0",
+
+    ],
+    "C_Cpp.dimInactiveRegions": true
+}

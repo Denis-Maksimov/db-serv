@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset = 'utf-8'>
+        <title> Sawmill25.Drying </title>
+        <style>
+        
+           body{
+                width: 100%;
+                height: 100%;
+                background-repeat: no-repeat; 
+                background-attachment: fixed;
+                 background: linear-gradient( 45deg, #ffffffcc , rgb(137, 221, 247) );
+                 
+            }
+            div{
+                background: linear-gradient( 165deg, rgba(115, 115, 115, 0.4) , rgba(255, 252, 255, .9) );
+                margin: 5px;
+                border: 1px solid black;
+                font-size: 20px;
+                height: 80px;
+                padding:5px;
+            }
+            #header{
+                background-color: rgb(190, 247, 255);
+                text-align: center;
+                margin:15px;
+            }
+            #leftSidebar{
+                background: linear-gradient( -70deg , rgb(223, 255, 225) , rgba(255, 152, 216, 0.671));
+                float: left;
+                text-align: left;
+                width: 150px;
+                height: 100%;
+            }
+            #rightSidebar{
+                background: linear-gradient( -70deg , rgb(162, 255, 167) ,  rgb(255, 255, 255));
+                text-align: right;
+                float: right;
+                width: 150px;
+            }
+            #main{
+               
+                background: linear-gradient( 180deg, rgb(255,255,255) , rgba(102, 111, 124, 0.438) );
+                text-align: center ;
+                
+                margin-left: 170px;
+                margin-right: 170px;
+                float: center;
+                height: 100%;
+            }
+            #footer{
+                background-color: #ccc;
+                text-align: center;
+         
+                margin:80px;
+                bottom: 0;
+                
+            }
+            p1{
+                float: center;
+                font-family: Verdana, Arial, Helvetica, sans-serif; 
+                font-size: 13pt; /* Размер шрифта в пунктах */ 
+            }
+            p{
+                font-family: Verdana, Arial, Helvetica, sans-serif; 
+                font-size: 8pt; /* Размер шрифта в пунктах */ 
+            }
+            
+            
+        </style>
+        
+    </head>
+    <body>
+         <!-------------------------------------------------------------------------------->
+        <div id='header'>Апгрейд сухарика
+            
+
+        </div>
+         <!-------------------------------------------------------------------------------->
+        <div id='leftSidebar'>leftSidebar
+            <a href='/index.html'><button>на главную</button> </a></br>
+            <a href='/settings.html'><button>настройки</button> </a></br>
+            <a><button>о программе</button> </a></br>
+        </div>
+         <!-------------------------------------------------------------------------------->
+        <div id='rightSidebar'>rightSidebar
+
+        </div>
+
+         <!-------------------------------------------------------------------------------->
+        <div id='main'>
+            <h2>Уведомление о лицензии GPL</h2>
+            <p1>
+                </br>
+                *** Drying monitor ***</br>
+                Copyright (C) 2019 Maksimov Denis dn.maksimow@gmail.com</br>
+                </br>
+                This library is free software; you can redistribute it and/or</br>
+                modify it under the terms of the GNU Lesser General Public</br>
+                License as published by the Free Software Foundation; either</br>
+                version 2 of the License, or (at your option) any later version.</br>
+                </br>
+                This library is distributed in the hope that it will be useful,</br>
+                but WITHOUT ANY WARRANTY; without even the implied warranty of</br>
+                MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU</br>
+                Lesser General Public License for more details.</br>
+                </br>
+                You should have received a copy of the GNU Lesser General Public</br>
+                License along with this library. If not, see 
+                <a href='http://www.gnu.org/licenses/'>www.gnu.org/licenses/ </a>.</br>
+                </br>
+            </p1>
+            <p1>
+                Иными словами, </br>
+                1) при распространении программы, обязательно </br>
+                прикреплять к ней исходники</br>
+                или уведомление о том как их получить (БЕСПЛАТНО!!!)</br>
+                2) GNU GPL — копилефтная лицензия, и требует, чтобы исходные</br>
+                коды производных работ были открытыми под ней же.</br>
+                3) Обязательно в производные работы прикреплять уведомление выше</br>
+                Несоблюдение пунктов лицензии GNU GPL нарушает </br>
+                авторские права Free Software Foundation</br></br>
+            </p1>
+            <h2>О программе</h2>
+            <p1>
+                Эта программа предназначена для мониторинга температур сушки</br>
+                Принцип её работы заключается в следующем:</br>
+                В результате технологического процесса сушки</br>
+                программное обеспечение "Valmatics" производства </br>
+                компании "Valutec" сохраняет значения параметров сушки</br>
+                в базе данных SQL. Базы данных представляют из себя</br>
+                файлы формата *.db размером около 30 Мбайт.</br>
+                Расшифровать данные файлы возможно с помощью</br>
+                СУБД (систем управления базами данных), </br>
+                работающих по спецификации SQL.</br>
+                В силу того, что периодическая передача баз данных</br>
+                на удалённый компьютер для дальнейшего извлечения параметров</br>
+                несёт большую нагрузку на сеть, было принято решение</br>
+                написать программу (веб-сервер), которая будет локально</br>
+                выполнять запросы к базам данным и выдавать в локальную</br>
+                сеть в виде html-страниц параметры температур.</br>
+                В ходе написания программы были использованы библиотеки:</br>
+                * SQLite-amalgamation версии 3.7.13 (полностью бесплатная</br>
+                в том числе и для коммерческого использования)</br>
+                * GTK+ 3.0 - библиотека для работы с графическим интерфейсом</br>
+                данная библиотека распространяется по лицензии GPL v.3.0</br>
+                </br>
+                Программа была написана на языке C++ и скомпилирована в</br>
+                компиляторе MinGW. Первоначально писалась на Linux платформе</br>
+                на ОС Debian 10 с целью портирования на Windows, т.о.</br>
+                данную программу при необходимости легко перенести на</br>
+                Linux - платформу.</br>
+                Более подробное описание программы находится в исходных</br>
+                файлах</br>
+
+            </p1>
+        </div>
+        <!-------------------------------------------------------------------------------->
+        <div id='footer'>footer</div>
+        
+    </body>
+    <p align=center bottom=0>Максимов Денис Николаевич АСУТП ЛП-3 2019 г. ЗАО"Лесозавод25" Группа компаний "Титан"</p>
+</html>
+

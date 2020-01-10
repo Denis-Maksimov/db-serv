@@ -21,7 +21,8 @@ doc/**/*.txt
 
 TEST
 src/Serv/test.cpp
-
+.directory
+1.code-workspace
 lib/fork.c
 lib/sqlite-amalgamation-3071300/shell.c
 lib/sqlite-amalgamation-3071300/sqlite3ext.h
