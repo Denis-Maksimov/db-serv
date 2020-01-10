@@ -332,7 +332,11 @@ char* SQLquery::get_line(int line_number,char* buffer,std::size_t size_of_bufer)
     {
     }
 
-    
+/***********************************************************
+ * \brief 
+ * \param db_name - путь к БД
+ * \param num - номер строки зароса файла querys.data
+************************************************************/
 char* SQLquery::execute_querry(const char* db_name,int num){
 
     //char* ret_val=(char*)malloc(256);
@@ -345,22 +349,34 @@ char* SQLquery::execute_querry(const char* db_name,int num){
         /// TODO: error handle
     else{
         
+        //переменная под запрос из файла querys.data
         char* querry1=(char*)malloc(256);
+
+        //такая же переменная, но вместо %s ужой значения
         char* querry=(char*)malloc(256);
+
+
         get_line(num,querry1,256);
         
+        /// Конечный автомат для путя
         switch (num)
         {
         case Query::path_to_db:
-            
+            puts("path");
             break;
         case Query::new_table:
             sprintf(querry,querry1);
+            puts("new_table");
             break;
         case Query::insert:
             sprintf(querry,querry1,"db_name","hi","bye");
+            puts("insert");
             break;
-        
+
+        case Query::sellect:
+             sprintf(querry,querry1);
+             puts("sellect");
+             break;
         default:
 
             break;
@@ -383,13 +399,26 @@ char* SQLquery::execute_querry(const char* db_name,int num){
 
 }
 
+/****************************************
+ * \brief Функция для приёма данных с БД
+ * XXX:
+ * TODO: вместо stdout глобальный массив в RAM для своих данных для графиков и т.д.
+ * \param var_ifce - 4-й аргумент в sqlite3_exec - пока что не используется
+ * \param argc - число элементов пришедших от БД
+ * \param argv - массив значений
+ * \param azColName - массив названий колонок
+ * \return 0
+*****************************************/
 int SQLquery::callback(void* var_ifce, int argc, char**argv, char**azColName){
-    int i;
+    // int i;
  //   *(int*)var_ifce=(*(int*)var_ifce);
-    for (i=0;i<argc;i++){
-        printf("%s = %s\n",azColName[i],argv[i]?argv[i]: "NULL");
+
+    //выводим в stdout все данные
+    for (int i=0;i<argc;i++){
+        printf("%s = %s\n",azColName[i],(argv[i]?argv[i]:"NULL"));
 
     }
     putchar('\n');
     return 0;
 }
+

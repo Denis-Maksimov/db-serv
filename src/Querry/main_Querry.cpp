@@ -9,7 +9,8 @@ int main_Querry(int argc, const char** argv){
   //  char* get_line(int line_number,char* buffer,std::size_t size_of_bufer);
     //-----------------------------------------------
        SQLquery obj("./querys.data");   
-       obj.execute_querry("./TEST1.db", Query::new_table);
+  //     obj.execute_querry("./TEST1.db", Query::new_table);
+       obj.execute_querry("./TEST1.db", Query::sellect);
     //-----------------------------------------------
     return 0;
 

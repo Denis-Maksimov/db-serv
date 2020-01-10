@@ -45,6 +45,7 @@ enum{
             path_to_db=0,
             new_table,
             insert,
+            sellect
         };
 
 }

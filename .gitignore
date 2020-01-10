@@ -9,7 +9,7 @@
 /TODO
 
 # ignore all files in the build/ directory
-execute_me/
+# execute_me/
 
 # ignore doc/notes.txt, but not doc/server/arch.txt
 doc/*.txt
@@ -17,7 +17,7 @@ doc/*.txt
 # ignore all .txt files in the doc/ directory
 doc/**/*.txt
 
-.vscode/*
+#.vscode/*
 
 TEST
 src/Serv/test.cpp
