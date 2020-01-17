@@ -32,7 +32,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <sys/socket.h>
-
+#include "../../miscellane/direct.hpp"
 //выделяем отдельное пространство имён 
 //(для танкистов - на размер и производительность программы не влияет)
 namespace http{
@@ -49,7 +49,8 @@ namespace http{
         E404=0,     //404
         INDEX,      //index.html
         SETTINGS,   //settings.html
-        ABOUT       //about.html
+        ABOUT,      //about.html
+        EXISTENCE_FILE       // ./*
     };
 
 /***************************************************

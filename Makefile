@@ -4,7 +4,7 @@
 LIBS:= -ldl -lpthread `pkg-config --libs gtk+-3.0` -rdynamic
 
 #flags
-CFLAGS:= -c -O2 
+CFLAGS:= -c -O2 -g
 
 #include "local.h"
 CFLAGS+= -I./lib
@@ -48,6 +48,10 @@ OBJ+= ./main_Querry.o
 
 SRC+= ./lib/sqlite-amalgamation-3071300/sqlite.c
 OBJ+= ./sqlite3.o
+
+#--Разное
+SRC+= ./src/miscellane/direct.cpp
+OBJ+= ./direct.o
 
 
 #SRC+= ./lib/thread.c
@@ -114,6 +118,13 @@ http.o: ./src/Serv/http/http.cpp
 		#
 		#compilling http.cpp
 		g++  ./src/Serv/http/http.cpp $(CFLAGS)
+
+#----------------------------------
+
+direct.o: ./src/miscellane/direct.cpp
+		#
+		#compilling http.cpp
+		g++  ./src/miscellane/direct.cpp $(CFLAGS)
 
 #----------------------------------
 clean:

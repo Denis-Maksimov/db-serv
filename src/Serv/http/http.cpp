@@ -50,6 +50,7 @@ void parse(char* buf,int connfd){
     else if (strstr(buf,"POST")== buf )method=POST;
     else if (strstr(buf,"USER_MTH")== buf )method=MY_METHOD;
     
+    printf("meth %i\n",method);
     //распределение в зависимости от метода
     switch (method)
     {
@@ -67,6 +68,7 @@ void parse(char* buf,int connfd){
         break;
     default:
         puts("Calling ERROR");
+        puts(buf);
         handle_ERROR(connfd);//TODO
         break;
     }
@@ -140,7 +142,7 @@ long* split_to_spaces(char* buf,int* argc){
                 ln[iterator]=tmp_pos;
                 iterator++;
                 flag &= ~(1L);
-                puts("space");
+               // puts("space");
             }
 
             break;
@@ -197,7 +199,7 @@ void handle_GET(char* buf, int connfd, int lines,long* lines_array){
 
     */
 
-   printf("parse result is %i\n",doing);
+   printf("adr='%s' parse result is %i\n",adress,doing);
    /****************************
     * Обработка веток запросов
    ****************************/
@@ -219,7 +221,12 @@ void handle_GET(char* buf, int connfd, int lines,long* lines_array){
         response_code(200,connfd);
        response("./404.html", connfd);
        break;
-
+    case EXISTENCE_FILE:
+        puts("exist");
+        response_code(200,connfd);
+        puts(adress+1);
+        response(adress+1, connfd);
+        break;
    default:
         response_code(404,connfd);
         response("./404.html", connfd);
@@ -240,11 +247,21 @@ void handle_GET(char* buf, int connfd, int lines,long* lines_array){
 tag_branch GET_handle_adress(char* adress){
     tag_branch result=E404;
 
+    printf("handl%s",adress+1);
     //Обработка "исключительных" запросов
     if(!strcmp(adress,"/"))                 {result=INDEX;}else 
     if(!strcmp(adress,"/index.html"))       {result=INDEX;}else 
     if(!strcmp(adress,"/settings.html"))    {result=SETTINGS;}else 
-    if(!strcmp(adress,"/about.html"))       {result=ABOUT;}
+    if(!strcmp(adress,"/about.html"))       {result=ABOUT;}else{
+
+    char* t_adr=(char*)malloc(strlen(adress)+2);
+    strcpy(t_adr+1,adress);
+    t_adr[0]='.';
+    if(touch(t_adr))            {result=EXISTENCE_FILE;
+    puts(adress+1);}
+    free(t_adr);
+    }
+    
     return result;
 
 }//int GET_handle_adress(char* adress)

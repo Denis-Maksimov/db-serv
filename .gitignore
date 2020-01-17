@@ -19,6 +19,9 @@ doc/**/*.txt
 
 #.vscode/*
 
+#Пока не используется
+src/Mathematics/
+
 TEST
 src/Serv/test.cpp
 .directory
