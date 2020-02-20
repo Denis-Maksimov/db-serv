@@ -26,11 +26,25 @@
 // Несоблюдение пунктов лицензии GNU GPL нарушает авторские права Free Software Foundation
 //////////////////////////////////////////////////////////////////////////////////////////
 
-
+#define WINDOWS_APPLICATION
 
 #include "main_GUI.hpp"
 
 
+#ifdef WINDOWS_APPLICATION
+
+#include <windows.h>
+int main_GUI(int argc, char **argv){
+
+      MessageBox(NULL, "Click \"OK\" for send terminate signal", "Rabbit", MB_OK);
+      return 0;
+}
+
+#else
+//-- Код ниже работает с библиотекой GTK, которую ещё надо настроить
+#include <gtk/gtk.h>
+
+GtkWidget* GUI_init(int* argc, char** argv[]);
 
 
 int main_GUI(int argc, char **argv){
@@ -44,6 +58,7 @@ int main_GUI(int argc, char **argv){
     GtkWidget* window = GUI_init(&c, &pname);
     gtk_widget_show(window);
     gtk_main();
+    free(name);
     return 0;
 }
 
@@ -74,3 +89,5 @@ extern "C" {
       gtk_main_quit();
   }
 }
+
+#endif //!WINDOWS_APPLICATION
