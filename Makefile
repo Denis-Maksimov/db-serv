@@ -1,7 +1,10 @@
 #----------------------------------
 
 #libs
-LIBS:= -ldl -lpthread `pkg-config --libs gtk+-3.0` -rdynamic
+LIBS:= -ldl
+
+# -- POSIX threads --
+LIBS+= -lpthread 
 
 #flags
 CFLAGS:= -c -O2 -g
@@ -10,8 +13,9 @@ CFLAGS:= -c -O2 -g
 CFLAGS+= -I./lib
 CFLAGS+= -I./src
 
-#for GTK+
-CFLAGS+= `pkg-config --cflags --libs gtk+-3.0`
+#uncomment if using GTK+
+#CFLAGS+= `pkg-config --cflags --libs gtk+-3.0`
+#LIBS+= `pkg-config --libs gtk+-3.0` -rdynamic
 
 CFLAGS+= -I./src/Serv
 CFLAGS+= -I./src/GUI
